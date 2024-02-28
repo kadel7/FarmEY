@@ -1,77 +1,84 @@
 import React, { useState } from 'react';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useNavigate } from "react-router-dom";
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import auth from "./firebaseconfig";
+const auth1=getAuth();
+const LoginForm = () => {
+  const [data, setData] = useState({
+    email: '',
+    password: '',
+  });
 
-export const Login = () => {
-    const [data, setData] = useState({
-      email: '',
-      password: '',
-    });
-  
-    const { email, password } = data;
-    const navigate = useNavigate(); // Initialize useNavigate
+  const { email, password } = data;
+  const navigate = useNavigate();
 
-    const changeHandler = (e) => {
-      setData({ ...data, [e.target.name]: e.target.value });
-    };
-
-    return (
-        <div style={{ display: "flex" }}>
-  
-          <div className="row justify-content-end" style={{ padding: "100px 100px" }}>
-          <div>
-            <nav style={{ backgroundColor: '#007f00', padding: '20px', textAlign: 'center' }}>
-              <ul style={{ listStyleType: 'none', margin: 0, padding: 0 }}>
-                <li style={{ display: 'inline', marginRight: '20px' }}><a class="active" href="/Home" style={{ color: 'white', textDecoration: 'none', fontSize: '18px' }}>Home</a></li>
-                <li style={{ display: 'inline', marginRight: '20px' }}><a href="/Login" style={{ color: 'white', textDecoration: 'none', fontSize: '18px' }}>Login</a></li>
-                <li style={{ display: 'inline', marginRight: '20px' }}><a href="/About" style={{ color: 'white', textDecoration: 'none', fontSize: '18px' }}>About</a></li>
-                <li style={{ display: 'inline', marginRight: '20px' }}><a href="/Contact" style={{ color: 'white', textDecoration: 'none', fontSize: '18px' }}>Contact</a></li>
-                <li style={{ display: 'inline', marginRight: '20px' }}><a href="/Help" style={{ color: 'white', textDecoration: 'none', fontSize: '18px' }}>Help</a></li>
-              </ul>
-            </nav>
-          </div>
-            <div
-              className="card col-sm-4 bg-l rounded formu"
-              style={{ height: "380px", width: "600px" }}
-            >
-              <br />
-              <h4 align="center">Login</h4>
-              <center>
-                <form>
-                  <input
-                    style={{ border: "1px solid black", marginBottom: "20px" }}
-                    type="text"
-                    placeholder="Email id"
-                    value={email}
-                    name="email"
-                    onChange={changeHandler}
-                  />
-                  <br />
-                  <input
-                    autoComplete="off"
-                    style={{ border: "1px solid black", marginBottom: "20px" }}
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    name="password"
-                    onChange={changeHandler}
-                  />
-                  <br />
-                  <br />
-                  <br />
-                  <button onClick={Login}>Login</button>
-                </form>
-                <p>
-                  Don't have an account?&nbsp;&nbsp;&nbsp;&nbsp;
-                  <Link to="/signup">Signup</Link>
-                </p>
-              </center>
-            </div>
-          </div>
-          
-        </div>
-       
-    );
+  const handleChange = (e) => {
+    setData({ ...data, [e.target.name]: e.target.value });
   };
 
-  export default Login;
+  const handleSubmit = (e) => {
+    e.preventDefault();
+   signInWithEmailAndPassword(auth1,email,password)
+   .then((user)=>
+   {
+    console.log(user);
+    navigate('/dashboard');
+   })
+   .catch((err)=>
+   {
+    console.log(err);
+    window.alert("Please enter the correct credentials");
+   })
+  };
+
+  return (
+    <div style={{ backgroundColor: '#007f00', minHeight: '100vh' }}>
+      <nav style={{ backgroundColor: '#007f00', padding: '20px', textAlign: 'center' }}>
+        <ul style={{ listStyleType: 'none', margin: 0, padding: 0 }}>
+          <li style={{ display: 'inline', marginRight: '20px' }}><Link to="/" style={{ color: 'white', textDecoration: 'none', fontSize: '18px' }}>Home</Link></li>
+          <li style={{ display: 'inline', marginRight: '20px' }}><Link to="/login" style={{ color: 'white', textDecoration: 'none', fontSize: '18px' }}>Login</Link></li>
+          <li style={{ display: 'inline', marginRight: '20px' }}><Link to="/about" style={{ color: 'white', textDecoration: 'none', fontSize: '18px' }}>About</Link></li>
+          <li style={{ display: 'inline', marginRight: '20px' }}><Link to="/contact" style={{ color: 'white', textDecoration: 'none', fontSize: '18px' }}>Contact</Link></li>
+          <li style={{ display: 'inline', marginRight: '20px' }}><Link to="/help" style={{ color: 'white', textDecoration: 'none', fontSize: '18px' }}>Help</Link></li>
+        </ul>
+      </nav>
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 'calc(100vh - 80px)' }}>
+        <div style={{ width: '400px', padding: '20px', border: '1px solid #ccc', borderRadius: '5px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', backgroundColor: '#fff' }}>
+          <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Login</h2>
+          <form onSubmit={handleSubmit}>
+            <div style={{ marginBottom: '20px' }}>
+              <label htmlFor="email">Email:</label>
+              <input
+                type="text"
+                id="email"
+                name="email"
+                value={email}
+                onChange={handleChange}
+                style={{ width: '95%', padding: '10px', borderRadius: '5px', border: '1px solid #ccc' }}
+                placeholder="Enter your email"
+              />
+            </div>
+            <div style={{ marginBottom: '20px' }}>
+              <label htmlFor="password">Password:</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={password}
+                onChange={handleChange}
+                style={{ width: '95%', padding: '10px', borderRadius: '5px', border: '1px solid #ccc' }}
+                placeholder="Enter your password"
+              />
+            </div>
+            <button type="submit" style={{ width: '100%', padding: '10px', borderRadius: '5px', border: 'none', backgroundColor: '#007bff', color: '#fff', cursor: 'pointer' }}>Login</button>
+
+          </form>
+          <p style={{ marginTop: '20px', textAlign: 'center' }}>Don't have an account? <Link to="/signup">Sign up</Link></p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default LoginForm;
